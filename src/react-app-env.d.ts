@@ -1,5 +1,7 @@
 /// <reference types="react-scripts" />
 
+declare module 'fortmatic';
+
 interface Window {
   ethereum?: {
     isMetaMask?: true;
