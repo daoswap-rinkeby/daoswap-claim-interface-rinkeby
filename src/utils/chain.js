@@ -190,6 +190,22 @@ const supportedChains = [
       contractAddress: "",
       balance: ""
     }
+  },
+  {
+    name: "localhost 7545",
+    short_name: "eth",
+    chain: "ETH",
+    network: "localhost",
+    chain_id: 1337,
+    network_id: 5777,
+    rpc_url: "http://127.0.0.1:7545",
+    native_currency: {
+      symbol: "DOI",
+      name: "DOI",
+      decimals: "18",
+      contractAddress: "",
+      balance: ""
+    }
   }
 ];
 
