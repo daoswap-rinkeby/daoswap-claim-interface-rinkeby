@@ -91,20 +91,10 @@
 import clip from "@/utils/clipboard";
 import Web3 from "web3";
 import Web3Modal from "web3modal";
-import contract from "truffle-contract";
 import WalletConnectProvider from "@walletconnect/web3-provider";
-import { getChainData, getContract, formatBalance } from "@/utils/utilities";
-import {
-  ERC20ContractAddress,
-  ClaimContractAddress,
-  CHAIN_ID,
-  NETWORK_ID
-} from "@/constants";
-
-// 引入合约 ABI 文件
-import Claim from "@/constants/contracts/Claim.json";
-// 定义合约变量
-const ClaimContract = contract(Claim);
+import { getChainData } from "@/utils/utilities";
+import { getContract, formatAmount } from "@/utils/contract";
+import { CHAIN_ID, NETWORK_ID } from "@/constants";
 
 const initStats = {
   fetching: false,
@@ -179,14 +169,14 @@ export default {
       const { web3, address } = this.state;
       this.state.fetching = true;
       try {
-        const ERC20Contract = getContract("ERC20", ERC20ContractAddress, web3);
+        const ERC20Contract = await getContract("ERC20", web3);
         const ERC20Balance = await ERC20Contract.balanceOf(address);
-        const ClaimContract = getContract("Claim", ClaimContractAddress, web3);
+        const ClaimContract = await getContract("Claim", web3);
         const claimData = await ClaimContract.claimInfoByToken(address);
 
         const assets = {
-          ERC20Balance: formatBalance(ERC20Balance),
-          claimBalance: formatBalance(claimData.claimAmount),
+          ERC20Balance: formatAmount(ERC20Balance),
+          claimBalance: formatAmount(claimData.claimAmount),
           claimStatus: claimData.isClaim
         };
 
@@ -266,19 +256,17 @@ export default {
       this.state.fetching = true;
       this.dialog = false;
       // 执行合约
-      ClaimContract.setProvider(web3.currentProvider);
-      ClaimContract.at(Web3.utils.toChecksumAddress(ClaimContractAddress))
+      getContract("Claim", web3)
         .then(instance => {
           instance
             .claim({ from: address })
             .then(() => {
+              this.state.fetching = false;
               this.getAccountAssets();
             })
             .catch(e => {
-              console.info(e);
-            })
-            .then(() => {
               this.state.fetching = false;
+              console.info(e);
             });
         })
         .catch(e => {
