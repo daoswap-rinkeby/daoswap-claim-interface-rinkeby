@@ -10,8 +10,7 @@ module.exports = {
         algorithm: "gzip",
         test: new RegExp("\\.(js|css)$"),
         threshold: 10240,
-        minRatio: 0.8,
-        deleteOriginalAssets: true
+        minRatio: 0.8
       })
     ]
   }
