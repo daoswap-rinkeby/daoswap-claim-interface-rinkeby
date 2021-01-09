@@ -1,17 +1,8 @@
 import Web3 from "web3";
 import contract from "@truffle/contract";
-import {
-  ERC20_CONTRACT,
-  CLAIM_CONTRACT,
-  ERC20ContractAddress,
-  ClaimContractAddress
-} from "../constants";
+import { CLAIM_CONTRACT, ClaimContractAddress } from "../constants";
 
 const CONTRACTS = {
-  ERC20: {
-    contractJson: ERC20_CONTRACT,
-    address: ERC20ContractAddress
-  },
   Claim: {
     contractJson: CLAIM_CONTRACT,
     address: ClaimContractAddress
