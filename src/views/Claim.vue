@@ -92,7 +92,7 @@ import Web3 from "web3";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { getChainData } from "@/utils/utilities";
-import { getContract, formatAmount } from "@/utils/contract";
+import { getContract, formatAmountForString } from "@/utils/contract";
 import { CHAIN_ID, NETWORK_ID } from "@/constants";
 import AddressArray from "@/assets/address.json";
 
@@ -175,21 +175,23 @@ export default {
         if (searchResultArray.length > 0) {
           // 查询领取额度
           const ClaimContract = await getContract("Claim", web3);
-          const claimData = await ClaimContract.claimInfoByToken(address);
+          const claimData = await ClaimContract.methods
+            .claimInfoByToken(address)
+            .call();
           // 如果是提取额度小于等于0，代表未提取，则要显示空投额度
           if (claimData.claimAmount <= 0) {
-            const tempClaimAmount = await ClaimContract.claimAmount();
-            claimAmount = formatAmount(tempClaimAmount);
+            const tempClaimAmount = await ClaimContract.methods
+              .claimAmount()
+              .call();
+            claimAmount = formatAmountForString(tempClaimAmount);
           }
         }
 
-        const assets = {
-          claimBalance: claimAmount
-        };
-
         const assetsState = {
           fetching: false,
-          assets: assets
+          assets: {
+            claimBalance: claimAmount
+          }
         };
         this.state = Object.assign(this.state, assetsState);
       } catch (error) {
@@ -264,21 +266,15 @@ export default {
       this.dialog = false;
       // 执行合约
       getContract("Claim", web3)
-        .then(instance => {
-          instance
-            .claim({ from: address })
-            .then(() => {
-              this.state.fetching = false;
-              this.getAccountAssets();
-            })
-            .catch(e => {
-              this.state.fetching = false;
-              console.info(e);
-            });
+        .methods.claim()
+        .send({ from: address })
+        .then(() => {
+          this.state.fetching = false;
+          this.getAccountAssets();
         })
         .catch(e => {
-          console.info(e);
           this.state.fetching = false;
+          console.info(e);
         });
     }
   },

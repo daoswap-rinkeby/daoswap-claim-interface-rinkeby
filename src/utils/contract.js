@@ -1,5 +1,4 @@
 import Web3 from "web3";
-import contract from "@truffle/contract";
 import { CLAIM_CONTRACT, ClaimContractAddress } from "../constants";
 
 const CONTRACTS = {
@@ -12,9 +11,11 @@ const CONTRACTS = {
 export const getContract = (name, web3) => {
   const contractObj = CONTRACTS[name];
   // 定义合约变量
-  const readContract = contract(contractObj.contractJson);
-  readContract.setProvider(web3.currentProvider);
-  return readContract.at(contractObj.address);
+  const readContract = new web3.eth.Contract(
+    contractObj.contractJson.abi,
+    contractObj.address
+  );
+  return readContract;
 };
 
 /**
@@ -26,4 +27,15 @@ export const getContract = (name, web3) => {
 export const formatAmount = (amount, decimals) => {
   const decimalsValue = decimals || 18;
   return Web3.utils.BN(amount).toString() / Math.pow(10, decimalsValue);
+};
+
+/**
+ * format amount for string
+ * @param {(string|number)} amount
+ * @param {number} decimals
+ * @returns {number | null}
+ */
+export const formatAmountForString = (amount, decimals) => {
+  const decimalsValue = decimals || 18;
+  return amount / Math.pow(10, decimalsValue);
 };
