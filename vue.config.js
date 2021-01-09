@@ -13,10 +13,5 @@ module.exports = {
         minRatio: 0.8
       })
     ]
-  },
-  chainWebpack: config => {
-    config
-      .plugin("webpack-bundle-analyzer")
-      .use(require("webpack-bundle-analyzer").BundleAnalyzerPlugin);
   }
 };
